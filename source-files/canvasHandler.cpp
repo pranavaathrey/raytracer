@@ -22,7 +22,7 @@
     Colour Colour::operator*(const Colour& other) const {
         return Colour(red * other.red / 255, 
                     green * other.green / 255, 
-                    blue * other.blue / 255);
+                    blue * other.blue / 255); 
     }
 
 // Canvas class definitions
