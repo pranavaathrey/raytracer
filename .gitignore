@@ -20,3 +20,6 @@
 *.la
 *.a
 *.lib
+
+# IDE Config
+.vscode/
