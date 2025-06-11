@@ -1,20 +1,17 @@
 #include "vector.hpp"
-#include <cmath>
 
 // Vector class definitions
-    Vector::Vector(float _x, float _y, float _z) {
-        x = _x;
-        y = _y;
-        z = _z;
-    }
     Vector Vector::operator+(Vector v2) {
         return Vector(x + v2.x, y + v2.y, z + v2.z);
     }
     Vector Vector::operator-(Vector v2) {
         return Vector(x - v2.x, y - v2.y, z - v2.z);
     }
-    float Vector::operator~() {
-        return sqrt((x*x)+(y*y)+(z*z));
+    Vector Vector::operator*(float multiplier){
+        return Vector(x * multiplier, y * multiplier, z * multiplier);
+    }
+    Vector Vector::operator/(float divisor){
+        return Vector(x / divisor, y / divisor, z / divisor);
     }
 
 // dot and cross products

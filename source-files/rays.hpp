@@ -6,4 +6,5 @@
 
 void IntersectRaySphere();
 
+float computeLightIntensity(Vector point, Vector normal);
 Colour traceRay(Vector camera, Vector D, float startDist, float endDist);

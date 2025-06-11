@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <algorithm>
 
-#define WIDTH 720
+#define WIDTH 1080
 #define HEIGHT 720
 
 class Colour { // Colour class declaration
@@ -21,6 +21,7 @@ class Colour { // Colour class declaration
     Colour operator+(const Colour&) const;
     Colour operator-(const Colour&) const;
     Colour operator*(const Colour&) const;
+    Colour operator*(const float&) const;
 
     friend class Canvas;
 };

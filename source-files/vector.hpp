@@ -1,16 +1,20 @@
 #pragma once
+#include <cmath>
 
 class Vector {
     public:
-    float x;
-    float y;
-    float z;
+    float x, y, z;
+    float magnitude;
 
-    Vector(float _x, float _y, float _z);
+    Vector(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
+            : x(_x), y(_y), z(_z) {
+        magnitude = sqrt((x*x)+(y*y)+(z*z));
+    }
 
     Vector operator+(Vector v2);
     Vector operator-(Vector v2);
-    float operator~();
+    Vector operator*(float multiplier);
+    Vector operator/(float divisor);
 };
 
 float dot(Vector v1, Vector v2);

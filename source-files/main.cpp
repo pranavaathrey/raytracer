@@ -13,13 +13,14 @@ int main() {
     //place the camera and define the scene (see sceneDefinition.cpp)
     Vector cameraCoordinates(0, 0, 0);
     Orientation cameraOrientation(0, 0, 0);
-    defineScene(spheres);
+    defineScene(pointLights, directionalLights, spheres);
 
     // render loop
     for (int y = -HEIGHT/2; y < HEIGHT/2; ++y) {
         for (int x = -WIDTH/2; x < WIDTH/2; ++x) {
-            // colouring in the background
-            canvas.placePixel(Colour(127, 127, 127), x, y);
+            // colouring in the background with a gradient
+            float t = ((y + HEIGHT/2.0f) / HEIGHT) + 0.5;
+            canvas.placePixel(Colour(85, 85, 85) * t, x, y);
 
             // determine which point on the viewport corresponds to this pixel
             Vector viewportPoint = canvasToViewport(x, y);

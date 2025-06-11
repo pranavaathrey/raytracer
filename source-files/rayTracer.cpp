@@ -6,6 +6,7 @@ struct Solution {
 
 Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
     // finds the two points where the ray intersects a sphere (if any) using the quadratic equation
+    // O = camera's position, D = position on the viewport plane that corresponds to the pixel on the canvas
 
     float r = sphere.radius;
     Vector vectorO = Vector(O.x, O.y, O.z);
@@ -26,6 +27,29 @@ Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
     soln.t1 = (-b + sqrt(discriminant)) / (2*a);
     soln.t2 = (-b - sqrt(discriminant)) / (2*a);
     return soln;
+}
+
+
+float computeLightIntensity(Vector point, Vector normal) {
+    float intensity = ambientLight;
+    Vector lightRay;
+
+    for (pointLight light: pointLights) {
+        lightRay = light.position - point;
+
+        // The Lambertian Diffused Light Equation
+        if (dot(normal, lightRay) > 0) 
+            intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+    }
+    for (directionalLight light: directionalLights) {
+        lightRay = light.direction;
+
+        // The Lambertian Diffused Light Equation
+        if (dot(normal, lightRay) > 0) 
+            intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+    }
+
+    return intensity;
 }
 
 Colour traceRay(Vector cameraPoint, Vector viewportPoint, float startDist, float endDist) {
@@ -50,8 +74,13 @@ Colour traceRay(Vector cameraPoint, Vector viewportPoint, float startDist, float
         }
     }
 
+    Vector sphereIntersectionPoint = cameraPoint + (viewportPoint * closest_t); 
+    Vector sphereNormal = (sphereIntersectionPoint - closestSphere.centre) 
+                        / (sphereIntersectionPoint - closestSphere.centre).magnitude; 
+
     if (!hitAnySphere) {
+        // return a transparent colour as no object was hit
         return Colour(0, 0, 0, 0);
     }
-    return closestSphere.colour;
+    return closestSphere.colour * computeLightIntensity(sphereIntersectionPoint, sphereNormal);
 }

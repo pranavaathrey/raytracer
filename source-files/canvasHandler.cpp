@@ -11,18 +11,23 @@
     // operator overloads
     Colour Colour::operator+(const Colour& other) const {
         return Colour(red + other.red, 
-                    green + other.green, 
-                    blue + other.blue);
+                      green + other.green, 
+                      blue + other.blue);
     }
     Colour Colour::operator-(const Colour& other) const {
         return Colour(red - other.red, 
-                    green - other.green, 
-                    blue - other.blue);
+                      green - other.green, 
+                      blue - other.blue);
     }
     Colour Colour::operator*(const Colour& other) const {
-        return Colour(red * other.red / 255, 
-                    green * other.green / 255, 
-                    blue * other.blue / 255); 
+        return Colour((red * other.red) / 255, 
+                      (green * other.green) / 255, 
+                      (blue * other.blue) / 255); 
+    }    
+    Colour Colour::operator*(const float& multiplier) const {
+        return Colour(red * multiplier, 
+                      green * multiplier, 
+                      blue * multiplier); 
     }
 
 // Canvas class definitions

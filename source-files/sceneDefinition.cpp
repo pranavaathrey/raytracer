@@ -7,19 +7,39 @@ Vector canvasToViewport(int x, int y) {
                   VIEWPORT_DISTANCE);
 }
 
-Sphere spheres[3];
+// Scene Lights
+float ambientLight = 0.2f;
+pointLight pointLights[1];
+directionalLight directionalLights[1];
 
-void defineScene(Sphere *spheres) {
+// Scene Objects
+Sphere spheres[4];
+
+void defineScene(pointLight *pointLights, directionalLight *directionalLights, 
+                    Sphere *spheres) {
+    // Scene Lights (note: colours not fully implemented)
+    pointLights[0].colour = Colour(255, 255, 255);
+    pointLights[0].position = Vector(2, 1, 0);
+    pointLights[0].intensity = 0.6f;
+
+    directionalLights[0].colour = Colour(255, 255, 255);
+    directionalLights[0].direction = Vector(1, 4, 4);
+    directionalLights[0].intensity = 0.2f;
+
     // Scene Objects
     spheres[0].centre = Vector(0, -1, 3);
     spheres[0].radius = 1;
-    spheres[0].colour = Colour(255, 0, 0);  // Red
+    spheres[0].colour = Colour(255, 0, 0);  // Red sphere
 
     spheres[1].centre = Vector(-2, 0, 4);
     spheres[1].radius = 1;
-    spheres[1].colour = Colour(0, 255, 0);  // Green
+    spheres[1].colour = Colour(0, 255, 0);  // Green sphere
 
     spheres[2].centre = Vector(2, 0, 4);
     spheres[2].radius = 1;
-    spheres[2].colour = Colour(0, 0, 255);  // Blue
+    spheres[2].colour = Colour(0, 0, 255);  // Blue sphere
+
+    spheres[3].centre = Vector(0, -5001, 0);
+    spheres[3].radius = 5000;
+    spheres[3].colour = Colour(255, 255, 0);  // Big yellow sphere
 }
