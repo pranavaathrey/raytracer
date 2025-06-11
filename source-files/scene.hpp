@@ -42,17 +42,21 @@ struct Sphere {
     float radius;
     Colour colour;
     float specularity;
-    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour col = Colour(255, 255, 255), float specularExponent = 500.0f)
-        : centre(c), radius(r), colour(col), specularity(specularExponent) {}
+    float reflectivity;
+    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour col = Colour(255, 255, 255), 
+        float specularExponent = 500.0f, float reflectiveness = 0.5f)
+        : centre(c), radius(r), colour(col), 
+          specularity(specularExponent), reflectivity(reflectiveness) {}
 };
 
 // Functions
 Vector canvasToViewport(int x, int y);
 
 // lights
+#define LIGHT_COUNT 15
 extern float ambientLight;
 extern pointLight pointLights[1];
-extern directionalLight directionalLights[1];
+extern directionalLight directionalLights[LIGHT_COUNT];
 
 // objects
 extern Sphere spheres[4];

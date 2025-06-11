@@ -18,16 +18,13 @@ int main() {
     // render loop
     for (int y = -HEIGHT/2; y < HEIGHT/2; ++y) {
         for (int x = -WIDTH/2; x < WIDTH/2; ++x) {
-            // colouring in the background with a gradient
-            float t = ((y + HEIGHT/2.0f) / HEIGHT) + 0.5;
-            canvas.placePixel(Colour(85, 85, 85) * t, x, y);
-
             // determine which point on the viewport corresponds to this pixel
             // (AKA our normalized light ray)
             Vector viewportPoint = canvasToViewport(x, y);
 
             // determine the colour seen through that square & paint the pixel with that colour
-            Colour seenColour = traceRay(cameraCoordinates, viewportPoint, 1, DRAW_DISTANCE);
+            // also define number of recursive reflection calls
+            Colour seenColour = traceRay(cameraCoordinates, viewportPoint, 1, DRAW_DISTANCE, 3);
             canvas.placePixel(seenColour, x, y);
         }
     }
