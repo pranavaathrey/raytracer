@@ -13,6 +13,9 @@
     Vector Vector::operator/(float divisor){
         return Vector(x / divisor, y / divisor, z / divisor);
     }
+    Vector Vector::operator-() {
+        return Vector(-x, -y, -z);
+    }
 
 // dot and cross products
 float dot(Vector v1, Vector v2) {

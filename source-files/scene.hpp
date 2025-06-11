@@ -41,16 +41,9 @@ struct Sphere {
     Vector centre;
     float radius;
     Colour colour;
-    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour col = Colour(255, 255, 255))
-        : centre(c), radius(r), colour(col) {}
-};
-struct Cylinder {
-    Vector centre;
-    float radius;
-    float height;
-    Colour colour;
-    Cylinder(Vector c = Vector(0, 0, 0), float r = 0.0f, float h = 0.0f, Colour col = Colour(255, 255, 255))
-        : centre(c), radius(r), height(h), colour(col) {}
+    float specularity;
+    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour col = Colour(255, 255, 255), float specularExponent = 500.0f)
+        : centre(c), radius(r), colour(col), specularity(specularExponent) {}
 };
 
 // Functions

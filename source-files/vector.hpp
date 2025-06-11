@@ -15,6 +15,7 @@ class Vector {
     Vector operator-(Vector v2);
     Vector operator*(float multiplier);
     Vector operator/(float divisor);
+    Vector operator-();
 };
 
 float dot(Vector v1, Vector v2);

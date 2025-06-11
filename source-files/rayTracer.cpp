@@ -29,24 +29,39 @@ Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
     return soln;
 }
 
-
-float computeLightIntensity(Vector point, Vector normal) {
+float computeLightIntensity(Vector point, Vector normal, Vector viewVector, float specularExponent) {
     float intensity = ambientLight;
     Vector lightRay;
 
     for (pointLight light: pointLights) {
         lightRay = light.position - point;
 
-        // The Lambertian Diffused Light Equation
+        // From the Lambertian Diffused Light Equation
         if (dot(normal, lightRay) > 0) 
             intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+        // From the Phong Specular Reflection Equation
+        if (specularExponent != -1) {
+            Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
+            float RdotV = dot(reflectionRay, viewVector);
+
+            if(RdotV > 0)
+                intensity += light.intensity * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+        }
     }
     for (directionalLight light: directionalLights) {
         lightRay = light.direction;
 
-        // The Lambertian Diffused Light Equation
+        // From the Lambertian Diffused Light Equation
         if (dot(normal, lightRay) > 0) 
             intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+        // From the Phong Specular Reflection Equation
+        if (specularExponent != -1) {
+            Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
+            float RdotV = dot(reflectionRay, viewVector);
+
+            if(RdotV > 0)
+                intensity += light.intensity * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+        }
     }
 
     return intensity;
@@ -82,5 +97,7 @@ Colour traceRay(Vector cameraPoint, Vector viewportPoint, float startDist, float
         // return a transparent colour as no object was hit
         return Colour(0, 0, 0, 0);
     }
-    return closestSphere.colour * computeLightIntensity(sphereIntersectionPoint, sphereNormal);
+    return closestSphere.colour 
+         * computeLightIntensity(sphereIntersectionPoint, sphereNormal,
+                                 -viewportPoint, closestSphere.specularity);
 }

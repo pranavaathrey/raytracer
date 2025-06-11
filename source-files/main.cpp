@@ -23,6 +23,7 @@ int main() {
             canvas.placePixel(Colour(85, 85, 85) * t, x, y);
 
             // determine which point on the viewport corresponds to this pixel
+            // (AKA our normalized light ray)
             Vector viewportPoint = canvasToViewport(x, y);
 
             // determine the colour seen through that square & paint the pixel with that colour
@@ -30,7 +31,6 @@ int main() {
             canvas.placePixel(seenColour, x, y);
         }
     }
-
     std::cout << "Render complete." << std::endl;
     
     // displaying the render in a window

@@ -30,16 +30,20 @@ void defineScene(pointLight *pointLights, directionalLight *directionalLights,
     spheres[0].centre = Vector(0, -1, 3);
     spheres[0].radius = 1;
     spheres[0].colour = Colour(255, 0, 0);  // Red sphere
+    spheres[0].specularity = 500.0f;
 
     spheres[1].centre = Vector(-2, 0, 4);
     spheres[1].radius = 1;
     spheres[1].colour = Colour(0, 255, 0);  // Green sphere
+    spheres[1].specularity = 10.0f;
 
     spheres[2].centre = Vector(2, 0, 4);
     spheres[2].radius = 1;
     spheres[2].colour = Colour(0, 0, 255);  // Blue sphere
+    spheres[2].specularity = 100.0f;
 
     spheres[3].centre = Vector(0, -5001, 0);
     spheres[3].radius = 5000;
     spheres[3].colour = Colour(255, 255, 0);  // Big yellow sphere
+    spheres[3].specularity = 1000.0f;
 }
