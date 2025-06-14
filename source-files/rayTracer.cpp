@@ -6,11 +6,10 @@ struct Solution {
 
 Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
     // finds the two points where the ray intersects a sphere (if any) using the quadratic equation
-    // O = camera's position, D = position on the viewport plane that corresponds to the pixel on the canvas
+    // O = camera's position, D = light ray emerging from viewport
 
     float r = sphere.radius;
-    Vector vectorO = Vector(O.x, O.y, O.z);
-    Vector CO = vectorO - sphere.centre;
+    Vector CO = O - sphere.centre;
 
     float a = dot(D, D);
     float b = 2*dot(CO, D);
@@ -40,7 +39,7 @@ struct Set {
     Sphere closestSphere;
 };
 
-Set closestIntersection(Vector cameraPoint, Vector viewportPoint, float startDist, float endDist) {
+Set closestIntersection(Vector cameraPoint, Vector ray, float startDist, float endDist) {
     Set set;
     
     set.closest_t = INF;
@@ -48,7 +47,7 @@ Set closestIntersection(Vector cameraPoint, Vector viewportPoint, float startDis
     set.closestSphere = spheres[0];
 
     for (Sphere sphere: spheres) {
-        Solution soln = IntersectRaySphere(cameraPoint, viewportPoint, sphere);
+        Solution soln = IntersectRaySphere(cameraPoint, ray, sphere);
 
         if ((soln.t1 > startDist && soln.t1 < endDist) && soln.t1 < set.closest_t) {
             set.closest_t = soln.t1;
@@ -81,14 +80,16 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
 
         // From the Lambertian Diffused Light Equation
         if (dot(normal, lightRay) > 0) 
-            intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+            intensity += light.intensity * (dot(normal, lightRay) 
+                       / (normal.magnitude * lightRay.magnitude));
         // From the Phong Specular Reflection Equation
         if (specularExponent != -1) {
             Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
 
             if(RdotV > 0)
-                intensity += light.intensity * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+                intensity += light.intensity 
+                           * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
         }
     }
     for (directionalLight light: directionalLights) {
@@ -101,38 +102,41 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
 
         // From the Lambertian Diffused Light Equation
         if (dot(normal, lightRay) > 0) 
-            intensity += light.intensity * (dot(normal, lightRay) / (normal.magnitude * lightRay.magnitude));
+            intensity += light.intensity * (dot(normal, lightRay) 
+                       / (normal.magnitude * lightRay.magnitude));
         // From the Phong Specular Reflection Equation
         if (specularExponent != -1) {
             Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
 
             if(RdotV > 0)
-                intensity += light.intensity * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+                intensity += light.intensity
+                           * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
         }
     }
     return intensity;
 }
 
-Colour traceRay(Vector cameraPoint, Vector viewportPoint, float startDist, float endDist, int recursionDepth) {
-    Set set = closestIntersection(cameraPoint, viewportPoint, startDist, endDist);
+Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, int recursionDepth) {
+    Set set = closestIntersection(cameraPoint, ray, startDist, endDist);
     if (!set.hitAnySphere) {
         // return a transparent colour as no object was hit
         return Colour(0, 0, 0, 0);
     }
-    Vector sphereIntersectionPoint = cameraPoint + (viewportPoint * set.closest_t); 
+    Vector sphereIntersectionPoint = cameraPoint + (ray * set.closest_t); 
     Vector sphereNormal = (sphereIntersectionPoint - set.closestSphere.centre) 
                         / (sphereIntersectionPoint - set.closestSphere.centre).magnitude; 
 
     Colour localColour = set.closestSphere.colour 
                 * computeLightIntensity(sphereIntersectionPoint, sphereNormal,
-                                        -viewportPoint, set.closestSphere.specularity);
+                                        -ray, set.closestSphere.specularity);
 
     // return local colour once the recursion limit is reached / object isnt reflective
     if (recursionDepth <= 0 || set.closestSphere.reflectivity <= 0)
         return localColour;
+
     // otherwise, compute reflected colour
-    Vector reflectedRay = reflectRay(-viewportPoint, sphereNormal);
+    Vector reflectedRay = reflectRay(-ray, sphereNormal);
     Colour reflectedColour = traceRay(sphereIntersectionPoint, reflectedRay, 0.05f, INF, recursionDepth - 1);
     
     // returns a blend between reflected and local colours according to reflectivity of sphere

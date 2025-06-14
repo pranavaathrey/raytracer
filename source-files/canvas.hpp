@@ -8,10 +8,9 @@
 #define HEIGHT 720
 
 class Colour { // Colour class declaration
-    private:
+    public:
     uint8_t red, green, blue, alpha;
 
-    public:
     Colour();  // default constructor
     template<typename T>
     Colour(T r, T g, T b, T a = 255);  // template declaration
@@ -34,10 +33,9 @@ Colour::Colour(T r, T g, T b, T a) {
 } 
 
 class Canvas { // Canvas class declaration
-    private:
+    public:
     std::vector<Colour> pixels;
 
-    public:
     Canvas();
     void placePixel(const Colour& c, int x, int y);
     void draw(sf::RenderWindow& window);

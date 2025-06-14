@@ -8,14 +8,6 @@
 
 #define DRAW_DISTANCE 999999
 
-struct Orientation {
-    float yaw;
-    float pitch;
-    float roll;
-    Orientation(float y = 0.0f, float p = 0.0f, float r = 0.0f)
-        : yaw(y), pitch(p), roll(r) {}
-};
-
 // Lights
 struct pointLight {
     Colour colour;
@@ -53,7 +45,7 @@ struct Sphere {
 Vector canvasToViewport(int x, int y);
 
 // lights
-#define LIGHT_COUNT 15
+#define LIGHT_COUNT 1
 extern float ambientLight;
 extern pointLight pointLights[1];
 extern directionalLight directionalLights[LIGHT_COUNT];

@@ -1,9 +1,12 @@
 #include <iostream>
+#include <chrono>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #include "canvas.hpp"
 #include "scene.hpp"
 #include "rays.hpp"
+#include "BMP.hpp"
 
 int main() {
     // initialize canvas & its window
@@ -12,23 +15,32 @@ int main() {
 
     //place the camera and define the scene (see sceneDefinition.cpp)
     Vector cameraCoordinates(0, 0, 0);
-    Orientation cameraOrientation(0, 0, 0);
+    Vector cameraOrientation(0, 0, 0);
     defineScene(pointLights, directionalLights, spheres);
+
+    // start timer
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     // render loop
     for (int y = -HEIGHT/2; y < HEIGHT/2; ++y) {
         for (int x = -WIDTH/2; x < WIDTH/2; ++x) {
             // determine which point on the viewport corresponds to this pixel
             // (AKA our normalized light ray)
-            Vector viewportPoint = canvasToViewport(x, y);
+            Vector ray = canvasToViewport(x, y);
 
             // determine the colour seen through that square & paint the pixel with that colour
             // also define number of recursive reflection calls
-            Colour seenColour = traceRay(cameraCoordinates, viewportPoint, 1, DRAW_DISTANCE, 3);
+            Colour seenColour = traceRay(cameraCoordinates, ray, 1, DRAW_DISTANCE, 8);
             canvas.placePixel(seenColour, x, y);
         }
     }
-    std::cout << "Render complete." << std::endl;
+    // end timer and remark in console
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    std::cout << "Render complete. Time taken: " << duration << " ms." << std::endl;
+
+    // saving render to a bitmap file
+    saveAsBMP(canvas.pixels, WIDTH, HEIGHT, "output.bmp"); 
     
     // displaying the render in a window
     while (window.isOpen()) {
