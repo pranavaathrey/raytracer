@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <algorithm>
 
-#define WIDTH 1080
-#define HEIGHT 720
+#define WIDTH (1080*1)
+#define HEIGHT (720*1)
 
 class Colour { // Colour class declaration
     public:

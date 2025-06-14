@@ -33,6 +33,20 @@ Vector reflectRay(Vector ray, Vector normal) {
     return newVector;
 }
 
+bool refractRay(Vector incidentRay, Vector normal, float n1, float n2, Vector &refractedRay) {
+    float cosTheta = -dot(incidentRay, normal);
+    float eta = n1 / n2;
+    float k = 1 - pow(eta, 2) * (1 - pow(cosTheta, 2));
+
+    if (k < 0) {
+        // this will be total internal reflection
+        return false;
+    } else {
+        refractedRay = incidentRay * eta + normal * (eta * cosTheta - sqrt(k));
+        return true;
+    }
+}
+
 struct Set {    
     float closest_t;    
     bool hitAnySphere;
@@ -74,39 +88,41 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
         lightRay = light.position - point;
 
         // Check if point is in shadow (tmax is at the light's pos, 1)
-        Set set = closestIntersection(point, lightRay, 0.05f, 1);
+        Set set = closestIntersection(point, lightRay, 0.001f, 1);
         if(set.hitAnySphere)
             continue;
 
+        float NdotL = dot(normal, lightRay);
         // From the Lambertian Diffused Light Equation
-        if (dot(normal, lightRay) > 0) 
-            intensity += light.intensity * (dot(normal, lightRay) 
+        if (NdotL > 0) 
+            intensity += light.intensity * (NdotL 
                        / (normal.magnitude * lightRay.magnitude));
         // From the Phong Specular Reflection Equation
         if (specularExponent != -1) {
-            Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
+            Vector reflectionRay = (normal*2) * NdotL - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
 
             if(RdotV > 0)
-                intensity += light.intensity 
-                           * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+                intensity += light.intensity * pow(RdotV/
+                            (reflectionRay.magnitude * viewVector.magnitude), specularExponent);
         }
     }
     for (directionalLight light: directionalLights) {
         lightRay = light.direction;
 
         // Check if point is in shadow (tmax is at infinity)
-        Set set = closestIntersection(point, lightRay, 0.05f, INF);
+        Set set = closestIntersection(point, lightRay, 0.001f, INF);
         if(set.hitAnySphere)
             continue;
 
+        float NdotL = dot(normal, lightRay);
         // From the Lambertian Diffused Light Equation
-        if (dot(normal, lightRay) > 0) 
-            intensity += light.intensity * (dot(normal, lightRay) 
+        if (NdotL > 0) 
+            intensity += light.intensity * (NdotL
                        / (normal.magnitude * lightRay.magnitude));
         // From the Phong Specular Reflection Equation
         if (specularExponent != -1) {
-            Vector reflectionRay = (normal*2) * dot(normal, lightRay) - lightRay;
+            Vector reflectionRay = (normal*2) * NdotL - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
 
             if(RdotV > 0)
@@ -127,19 +143,58 @@ Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, 
     Vector sphereNormal = (sphereIntersectionPoint - set.closestSphere.centre) 
                         / (sphereIntersectionPoint - set.closestSphere.centre).magnitude; 
 
+    // compute local shaded colour
     Colour localColour = set.closestSphere.colour 
                 * computeLightIntensity(sphereIntersectionPoint, sphereNormal,
                                         -ray, set.closestSphere.specularity);
 
-    // return local colour once the recursion limit is reached / object isnt reflective
-    if (recursionDepth <= 0 || set.closestSphere.reflectivity <= 0)
+    // return local colour once the recursion limit is reached
+    if (recursionDepth <= 0)
         return localColour;
-
-    // otherwise, compute reflected colour
-    Vector reflectedRay = reflectRay(-ray, sphereNormal);
-    Colour reflectedColour = traceRay(sphereIntersectionPoint, reflectedRay, 0.05f, INF, recursionDepth - 1);
     
-    // returns a blend between reflected and local colours according to reflectivity of sphere
-    return (localColour * (1 - set.closestSphere.reflectivity))
-         + (reflectedColour * set.closestSphere.reflectivity);
+    // check for transparency & refractive index, get transmitted colour and blend
+    if (set.closestSphere.refractiveIndex > 0.0f && set.closestSphere.transparency < 1.0f) {
+        float n1 = 1.0f;  // Air
+        float n2 = set.closestSphere.refractiveIndex;
+        Vector N = sphereNormal;
+        Vector viewRay = -ray;
+
+        // check if we're inside the object already (ray entering or exiting)
+        if (dot(viewRay, N) < 0) {
+            std::swap(n1, n2);
+            N = -N;
+        }
+        Vector refractedRay;
+
+        if (refractRay(ray, N, n1, n2, refractedRay)) {
+            Colour refractedColour = traceRay(sphereIntersectionPoint + refractedRay * 0.01f,
+                                            refractedRay, 0.001f, INF, recursionDepth - 1);
+            localColour = (localColour * set.closestSphere.transparency) 
+                        + (refractedColour * (1.0f - set.closestSphere.transparency));
+        } else {
+            // total internal reflection
+            Vector reflectedRay = reflectRay(ray, N);
+            Colour reflectedColour = traceRay(sphereIntersectionPoint + reflectedRay * 0.01f,
+                                            reflectedRay, 0.001f, INF, recursionDepth - 1);
+            localColour = localColour * set.closestSphere.transparency
+                        + reflectedColour * (1.0f - set.closestSphere.transparency);
+        }
+    }
+    // check for transparency alone, no refraction
+    else if (set.closestSphere.refractiveIndex = 0.0f && set.closestSphere.transparency < 1.0f) {
+        Colour transmittedColour = traceRay(sphereIntersectionPoint, ray, 0.001f, INF, recursionDepth - 1);
+        localColour = (localColour * set.closestSphere.transparency) 
+                    + (transmittedColour * (1 - set.closestSphere.transparency));
+    }
+    
+    // compute reflected colour if object is reflective
+    if (set.closestSphere.reflectivity >= 0) {
+        Vector reflectedRay = reflectRay(-ray, sphereNormal);
+        Colour reflectedColour = traceRay(sphereIntersectionPoint, reflectedRay, 0.05f, INF, recursionDepth - 1);
+        
+        //  blend between reflected and local colours according to reflectivity of sphere
+        localColour = localColour * (1 - set.closestSphere.reflectivity)
+                    + (reflectedColour * set.closestSphere.reflectivity);
+    }
+    return localColour;
 }

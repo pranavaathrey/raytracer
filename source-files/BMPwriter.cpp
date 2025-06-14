@@ -45,6 +45,7 @@ void saveAsBMP(const std::vector<Colour>& pixels, int width, int height, const s
     infoHeader.height = height;
     infoHeader.sizeImage = pixelDataSize;
 
+    // writing to output file
     std::ofstream out(fullPath, std::ios::binary);
     if (!out) return;
 
@@ -62,6 +63,5 @@ void saveAsBMP(const std::vector<Colour>& pixels, int width, int height, const s
         }
         out.write(reinterpret_cast<const char*>(padding.data()), padding.size());
     }
-
     out.close();
 }

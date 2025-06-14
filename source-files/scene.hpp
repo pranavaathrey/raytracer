@@ -33,12 +33,14 @@ struct Sphere {
     Vector centre;
     float radius;
     Colour colour;
+    float transparency;
     float specularity;
     float reflectivity;
-    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour col = Colour(255, 255, 255), 
-        float specularExponent = 500.0f, float reflectiveness = 0.5f)
-        : centre(c), radius(r), colour(col), 
-          specularity(specularExponent), reflectivity(reflectiveness) {}
+    float refractiveIndex;
+    Sphere(Vector c = Vector(0, 0, 0), float r = 0.0f, Colour hue = Colour(255, 255, 255), 
+        float clearness = 1.0f, float specularExponent = 500.0f, float reflectiveness = 0.5f, float ior = 1.0f)
+        : centre(c), radius(r), colour(hue), transparency(clearness),
+          specularity(specularExponent), reflectivity(reflectiveness), refractiveIndex(ior) {}
 };
 
 // Functions
@@ -51,7 +53,7 @@ extern pointLight pointLights[1];
 extern directionalLight directionalLights[LIGHT_COUNT];
 
 // objects
-extern Sphere spheres[4];
+extern Sphere spheres[8];
 
 void defineScene(pointLight *pointLights, directionalLight *directionalLights, 
                     Sphere *spheres);
