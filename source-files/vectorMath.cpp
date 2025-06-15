@@ -25,3 +25,35 @@ Vector cross(Vector v1, Vector v2) {
     // implement later
     return Vector(0, 0, 0);
 }
+
+// Quaternion class definitions
+    Quaternion::Quaternion(float angle, Vector axis) {
+        axis = axis / axis.magnitude;
+        float halfAngle = angle / 2;
+        
+        w = cos(halfAngle);
+        float s = sin(halfAngle);
+
+        x = axis.x * s;
+        y = axis.y * s;
+        z = axis.z * s;
+    }
+
+    Vector Quaternion::rotate(const Vector& vector) const {
+        Quaternion vectorQuat(0, vector.x, vector.y, vector.z);
+        Quaternion result = (*this) * vectorQuat * this->conjugate();
+        return Vector(result.x, result.y, result.z);
+    }
+
+    Quaternion Quaternion::conjugate() const {
+        return Quaternion(w, -x, -y, -z);
+    }
+
+    Quaternion Quaternion::operator*(const Quaternion& q) const {
+        return Quaternion(
+            w * q.w - x * q.x - y * q.y - z * q.z,
+            w * q.x + x * q.w + y * q.z - z * q.y,
+            w * q.y - x * q.z + y * q.w + z * q.x,
+            w * q.z + x * q.y - y * q.x + z * q.w
+        );
+    }

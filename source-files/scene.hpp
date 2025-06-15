@@ -8,6 +8,15 @@
 
 #define DRAW_DISTANCE 999999
 
+// Camera
+struct Camera {
+    Vector position;
+    Quaternion orientation;
+
+    Camera(Vector coordinate, 
+        float yaw, float pitch, float roll);
+};
+
 // Lights
 struct pointLight {
     Colour colour;

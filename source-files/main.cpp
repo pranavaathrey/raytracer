@@ -15,9 +15,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Canvas");
     Canvas canvas;
 
-    //place the camera and define the scene (see sceneDefinition.cpp)
-    Vector cameraCoordinates(0, 1, -6);
-    Vector cameraOrientation(0, 0, 0);
+    // place the camera and define the scene (see sceneDefinition.cpp)
+    // camera's arguments: position, yaw, pitch and roll angles (anti-clockwise)
+    Camera camera = Camera(Vector(0, 1, -6), 0, 0, 45);
     defineScene(pointLights, directionalLights, spheres);
 
     // start timer
@@ -27,12 +27,12 @@ int main() {
     for (int y = -HEIGHT/2; y < HEIGHT/2; ++y) {
         for (int x = -WIDTH/2; x < WIDTH/2; ++x) {
             // determine which point on the viewport corresponds to this pixel
-            // (AKA our normalized light ray)
-            Vector ray = canvasToViewport(x, y);
+            // (AKA our normalized light ray), also rotate it to go along the camera's orientation
+            Vector ray = camera.orientation.rotate(canvasToViewport(x, y));
 
             // determine the colour seen through that square & paint the pixel with that colour
             // also define number of recursive reflection calls
-            Colour seenColour = traceRay(cameraCoordinates, ray, 1, DRAW_DISTANCE, 4);
+            Colour seenColour = traceRay(camera.position, ray, 1, DRAW_DISTANCE, 4);
             canvas.placePixel(seenColour, x, y);
         }
     }

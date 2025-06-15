@@ -7,6 +7,18 @@ Vector canvasToViewport(int x, int y) {
                   VIEWPORT_DISTANCE);
 }
 
+// Camera struct definition
+    Camera::Camera(Vector coordinate, 
+                float yaw, float pitch, float roll) {
+        position = coordinate;
+
+        Quaternion yawQuat(yaw, Vector(0, 1, 0));
+        Quaternion pitchQuat(pitch, Vector(1, 0, 0));
+        Quaternion rollQuat(roll, Vector(0, 0, 1));
+
+        orientation = yawQuat * pitchQuat * rollQuat;
+    }
+
 // Scene Lights
 float ambientLight = 0.2f;
 pointLight pointLights[1];
