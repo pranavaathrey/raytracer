@@ -47,6 +47,10 @@ bool refractRay(Vector incidentRay, Vector normal, float n1, float n2, Vector &r
     }
 }
 
+float fresnelSchlick(float cosTheta, float F0) {
+    return F0 + (1 - F0) * powf(1 - cosTheta, 5);
+}
+
 struct Set {    
     float closest_t;    
     bool hitAnySphere;
@@ -93,11 +97,11 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
             continue;
 
         float NdotL = dot(normal, lightRay);
-        // From the Lambertian Diffused Light Equation
+        // Lambertian Diffused Light
         if (NdotL > 0) 
             intensity += light.intensity * (NdotL 
                        / (normal.magnitude * lightRay.magnitude));
-        // From the Phong Specular Reflection Equation
+        // Phong Specular Reflection
         if (specularExponent != -1) {
             Vector reflectionRay = (normal*2) * NdotL - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
@@ -116,18 +120,18 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
             continue;
 
         float NdotL = dot(normal, lightRay);
-        // From the Lambertian Diffused Light Equation
+        // Lambertian Diffused Light
         if (NdotL > 0) 
             intensity += light.intensity * (NdotL
                        / (normal.magnitude * lightRay.magnitude));
-        // From the Phong Specular Reflection Equation
+        // Phong Specular Reflection
         if (specularExponent != -1) {
             Vector reflectionRay = (normal*2) * NdotL - lightRay;
             float RdotV = dot(reflectionRay, viewVector);
 
             if(RdotV > 0)
-                intensity += light.intensity
-                           * pow(RdotV/(reflectionRay.magnitude * viewVector.magnitude), specularExponent);
+                intensity += light.intensity * pow(RdotV/
+                            (reflectionRay.magnitude * viewVector.magnitude), specularExponent);
         }
     }
     return intensity;
@@ -140,8 +144,7 @@ Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, 
         return Colour(0, 0, 0, 0);
     }
     Vector sphereIntersectionPoint = cameraPoint + (ray * set.closest_t); 
-    Vector sphereNormal = (sphereIntersectionPoint - set.closestSphere.centre) 
-                        / (sphereIntersectionPoint - set.closestSphere.centre).magnitude; 
+    Vector sphereNormal = normalize(sphereIntersectionPoint - set.closestSphere.centre); 
 
     // compute local shaded colour
     Colour localColour = set.closestSphere.colour 
@@ -154,23 +157,38 @@ Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, 
     
     // check for transparency & refractive index, get transmitted colour and blend
     if (set.closestSphere.refractiveIndex > 0.0f && set.closestSphere.transparency < 1.0f) {
-        float n1 = 1.0f;  // Air
+        float n1 = 1.0f;  // air's refractive index
         float n2 = set.closestSphere.refractiveIndex;
         Vector N = sphereNormal;
         Vector viewRay = -ray;
 
-        // check if we're inside the object already (ray entering or exiting)
+        // flip the normal if the ray's coming from the inside
         if (dot(viewRay, N) < 0) {
             std::swap(n1, n2);
             N = -N;
         }
+        // dealing with fresnel effects
+        float cosTheta = dot(viewRay, N);
+        float F0 = powf((n1 - n2) / (n1 + n2), 2.0f);
+        float fresnel = fresnelSchlick(cosTheta, F0);
+
         Vector refractedRay;
 
         if (refractRay(ray, N, n1, n2, refractedRay)) {
             Colour refractedColour = traceRay(sphereIntersectionPoint + refractedRay * 0.01f,
                                             refractedRay, 0.001f, INF, recursionDepth - 1);
+            Vector reflectedRay = reflectRay(ray, N);
+            Colour reflectedColour = traceRay(sphereIntersectionPoint + reflectedRay * 0.01f,
+                                            reflectedRay, 0.001f, INF, recursionDepth - 1);
+            Colour resultingColour = reflectedColour * fresnel + refractedColour * (1 - fresnel);
             localColour = (localColour * set.closestSphere.transparency) 
-                        + (refractedColour * (1.0f - set.closestSphere.transparency));
+                        + (resultingColour * (1.0f - set.closestSphere.transparency));
+            
+            // artistic: more reflections
+            Vector _reflectedRay = reflectRay(-ray, sphereNormal);
+            Colour _reflectedColour = traceRay(sphereIntersectionPoint, _reflectedRay, 0.05f, INF, recursionDepth - 1);
+            
+            localColour = localColour * (1 - 0.1) + (_reflectedColour * 0.1);
         } else {
             // total internal reflection
             Vector reflectedRay = reflectRay(ray, N);
@@ -181,20 +199,23 @@ Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, 
         }
     }
     // check for transparency alone, no refraction
-    else if (set.closestSphere.refractiveIndex = 0.0f && set.closestSphere.transparency < 1.0f) {
+    else if (set.closestSphere.refractiveIndex == 0.0f && set.closestSphere.transparency < 1.0f) {
         Colour transmittedColour = traceRay(sphereIntersectionPoint, ray, 0.001f, INF, recursionDepth - 1);
         localColour = (localColour * set.closestSphere.transparency) 
                     + (transmittedColour * (1 - set.closestSphere.transparency));
     }
     
     // compute reflected colour if object is reflective
-    if (set.closestSphere.reflectivity >= 0) {
+    if (set.closestSphere.reflectivity > 0) {
+        float cosTheta = std::max(0.0f, dot(-ray, sphereNormal));
+        float F0 = set.closestSphere.reflectivity;
+        float fresnel = fresnelSchlick(cosTheta, F0);
+
         Vector reflectedRay = reflectRay(-ray, sphereNormal);
-        Colour reflectedColour = traceRay(sphereIntersectionPoint, reflectedRay, 0.05f, INF, recursionDepth - 1);
-        
-        //  blend between reflected and local colours according to reflectivity of sphere
-        localColour = localColour * (1 - set.closestSphere.reflectivity)
-                    + (reflectedColour * set.closestSphere.reflectivity);
+        Colour reflectedColour = traceRay(sphereIntersectionPoint + reflectedRay * 0.01f, 
+                                            reflectedRay, 0.001f, INF, recursionDepth - 1);
+
+        localColour = localColour * (1.0f - fresnel) + reflectedColour * fresnel;
     }
     return localColour;
 }

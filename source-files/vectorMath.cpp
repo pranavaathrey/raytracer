@@ -17,7 +17,10 @@
         return Vector(-x, -y, -z);
     }
 
-// dot and cross products
+// other basic vector operations
+Vector normalize(Vector vector) {
+    return vector / vector.magnitude;
+}
 float dot(Vector v1, Vector v2) {
     return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
@@ -29,7 +32,7 @@ Vector cross(Vector v1, Vector v2) {
 // Quaternion class definitions
     Quaternion::Quaternion(float angle, Vector axis) {
         // normalize axis and convert angle to degrees
-        axis = axis / axis.magnitude;
+        axis = normalize(axis);
         float halfAngle = (angle * M_PI/180) / 2;
         
         w = cos(halfAngle);

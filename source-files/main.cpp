@@ -17,7 +17,7 @@ int main() {
 
     // place the camera and define the scene (see sceneDefinition.cpp)
     // camera's arguments: position, yaw, pitch and roll angles (anti-clockwise), in radians
-    Camera camera = Camera(Vector(0, 1, -6), 0, 30, 5);
+    Camera camera = Camera(Vector(0, 1, -6), 0, 0, 0);
     defineScene(pointLights, directionalLights, spheres);
 
     // start timer

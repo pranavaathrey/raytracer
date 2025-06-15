@@ -38,6 +38,6 @@ class Quaternion {
         : w(w_), x(x_), y(y_), z(z_) {}
 };
 
-
+Vector normalize(Vector vector);
 float dot(Vector v1, Vector v2);
 Vector cross(Vector v1, Vector v2);
