@@ -28,8 +28,9 @@ Vector cross(Vector v1, Vector v2) {
 
 // Quaternion class definitions
     Quaternion::Quaternion(float angle, Vector axis) {
+        // normalize axis and convert angle to degrees
         axis = axis / axis.magnitude;
-        float halfAngle = angle / 2;
+        float halfAngle = (angle * M_PI/180) / 2;
         
         w = cos(halfAngle);
         float s = sin(halfAngle);

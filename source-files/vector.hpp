@@ -18,6 +18,8 @@ class Vector {
     Vector operator-();
 };
 
+#define M_PI 3.14159
+
 class Quaternion {
     public:
     float w, x, y, z;

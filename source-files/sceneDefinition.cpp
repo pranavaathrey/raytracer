@@ -15,7 +15,8 @@ Vector canvasToViewport(int x, int y) {
         Quaternion yawQuat(yaw, Vector(0, 1, 0));
         Quaternion pitchQuat(pitch, Vector(1, 0, 0));
         Quaternion rollQuat(roll, Vector(0, 0, 1));
-
+        
+        // order matters. here, we rotate by roll, then pitch, then yaw.
         orientation = yawQuat * pitchQuat * rollQuat;
     }
 

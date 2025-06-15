@@ -16,8 +16,8 @@ int main() {
     Canvas canvas;
 
     // place the camera and define the scene (see sceneDefinition.cpp)
-    // camera's arguments: position, yaw, pitch and roll angles (anti-clockwise)
-    Camera camera = Camera(Vector(0, 1, -6), 0, 0, 45);
+    // camera's arguments: position, yaw, pitch and roll angles (anti-clockwise), in radians
+    Camera camera = Camera(Vector(0, 1, -6), 0, 30, 5);
     defineScene(pointLights, directionalLights, spheres);
 
     // start timer
