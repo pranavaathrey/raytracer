@@ -34,12 +34,12 @@ void defineScene(pointLight *pointLights, directionalLight *directionalLights,
     // Scene Lights (note: colours not fully implemented)
     pointLights[0].colour = Colour(255, 255, 255);
     pointLights[0].position = Vector(2, 1, 0);
-    pointLights[0].intensity = 0.6f;
+    pointLights[0].intensity = 1.6f;
 
     for (int i = 0; i < LIGHT_COUNT; i++) {
         directionalLights[i].colour = Colour(255, 255, 255);
         directionalLights[i].direction = Vector(1 + i/4, 4 + i/2, 4 + i/2);
-        directionalLights[i].intensity = (float) 0.2f / (LIGHT_COUNT);
+        directionalLights[i].intensity = (float) 0.3f / (LIGHT_COUNT);
     }
 
     // Scene Objects

@@ -29,10 +29,11 @@ Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
 }
 
 Vector reflectRay(Vector ray, Vector normal) {
-    Vector newVector = (normal * 2) * dot(normal, ray) - ray;
-    return newVector;
+    Vector reflectedRay = (normal * 2) * dot(normal, ray) - ray;
+    return reflectedRay;
 }
 
+// checks if given ray gets refracted in its path, if yes, return true and refract the ray
 bool refractRay(Vector incidentRay, Vector normal, float n1, float n2, Vector &refractedRay) {
     float cosTheta = -dot(incidentRay, normal);
     float eta = n1 / n2;
@@ -51,14 +52,14 @@ float fresnelSchlick(float cosTheta, float F0) {
     return F0 + (1 - F0) * powf(1 - cosTheta, 5);
 }
 
-struct Set {    
+struct infoSet {    
     float closest_t;    
     bool hitAnySphere;
     Sphere closestSphere;
 };
 
-Set closestIntersection(Vector cameraPoint, Vector ray, float startDist, float endDist) {
-    Set set;
+infoSet closestIntersection(Vector cameraPoint, Vector ray, float startDist, float endDist) {
+    infoSet set;
     
     set.closest_t = INF;
     set.hitAnySphere = false;
@@ -92,7 +93,7 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
         lightRay = light.position - point;
 
         // Check if point is in shadow (tmax is at the light's pos, 1)
-        Set set = closestIntersection(point, lightRay, 0.001f, 1);
+        infoSet set = closestIntersection(point, lightRay, 0.001f, 1);
         if(set.hitAnySphere)
             continue;
 
@@ -115,7 +116,7 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
         lightRay = light.direction;
 
         // Check if point is in shadow (tmax is at infinity)
-        Set set = closestIntersection(point, lightRay, 0.001f, INF);
+        infoSet set = closestIntersection(point, lightRay, 0.001f, INF);
         if(set.hitAnySphere)
             continue;
 
@@ -138,7 +139,7 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
 }
 
 Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, int recursionDepth) {
-    Set set = closestIntersection(cameraPoint, ray, startDist, endDist);
+    infoSet set = closestIntersection(cameraPoint, ray, startDist, endDist);
     if (!set.hitAnySphere) {
         // return a transparent colour as no object was hit
         return Colour(0, 0, 0, 0);
