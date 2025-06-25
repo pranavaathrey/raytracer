@@ -1,4 +1,26 @@
 #include "rays.hpp"
+#include "BMP.hpp"
+
+#define HDRI_WIDTH 4096
+#define HDRI_HEIGHT 2048
+
+// importing the HDRI (which is actually sdr but whatever)
+std::vector<Colour> HDRI = loadFromBMP("input/HDRI.bmp", HDRI_WIDTH, HDRI_HEIGHT);
+
+Colour getHDRIpixelFromRay(Vector ray) {
+    // calculating uv coordinate
+    float u = 0.5 + (atan2(ray.z, ray.x) / (2 * M_PI));
+    float v = 0.5 - (asin(ray.y) / M_PI);
+    // getting corresponding pixel coordinate in HDRI
+    int i = int(u * HDRI_WIDTH);
+    int j = int(v * HDRI_HEIGHT);
+    i = i % HDRI_WIDTH;
+    j = j % HDRI_HEIGHT;
+
+    // returning colour at coordinate
+    Colour backgroundColour = HDRI[j * HDRI_WIDTH + i];
+    return backgroundColour;
+}
 
 struct Solution {
     float t1, t2;
@@ -141,8 +163,8 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
 Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, int recursionDepth) {
     infoSet set = closestIntersection(cameraPoint, ray, startDist, endDist);
     if (!set.hitAnySphere) {
-        // return a transparent colour as no object was hit
-        return Colour(0, 0, 0, 0);
+        // return a background colour as no object was hit
+        return getHDRIpixelFromRay(ray);
     }
     Vector sphereIntersectionPoint = cameraPoint + (ray * set.closest_t); 
     Vector sphereNormal = normalize(sphereIntersectionPoint - set.closestSphere.centre); 
