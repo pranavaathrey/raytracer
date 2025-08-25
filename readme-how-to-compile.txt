@@ -11,7 +11,7 @@ enter this command:
 |
 cmake --build .
 
-the program will be build into the following directory:
+the program will be built into the following directory:
 |
 C:\Users\Pranav\Code\C & C++\projects\raytracer\build\Debug\Raytracer.exe
 
