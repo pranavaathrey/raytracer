@@ -6,12 +6,13 @@ struct boxKernel3x3 {
     Colour c7, c8, c9;
 };
 
-// helper functions
+// ----------------Helper Functions----------------
+
+// returns the perceived brightness of a given pixel.
 int getBrightness(Colour colour) {
     return ((float)colour.red * 0.299
           + (float)colour.green * 0.587
           + (float)colour.blue * 0.114); 
-    // integer value for perceived brightness
 }
 
 boxKernel3x3 getNeighbours(std::vector<Colour> &pixels, int x, int y) {
@@ -56,7 +57,7 @@ Colour kernelAvgColourNC(boxKernel3x3 kernel) {
     );
 }
 
-// doing a pass that removes the bright artifacts seen in the distance
+// does a pass that removes the bright artifacts seen in the distance
 void eliminateDistantReflectionAcne(std::vector<Colour> &pixels) {
     for (int y = 1; y < HEIGHT-1; y++) {
         for (int x = 1; x < WIDTH-1; x++) {

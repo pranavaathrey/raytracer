@@ -1,6 +1,7 @@
 #include "scene.hpp"
 #include "canvas.hpp"
 
+// converts canvas pixel coordinates to positions on the viewport.
 Vector canvasToViewport(int x, int y) {
     return Vector((float) x * VIEWPORT_WIDTH/WIDTH, 
                   (float) y * VIEWPORT_HEIGHT/HEIGHT, 
@@ -29,6 +30,7 @@ directionalLight directionalLights[LIGHT_COUNT];
 // Scene Objects
 Sphere spheres[8];
 
+// defines the positions and other properties of all the objects in the scene.
 void defineScene(pointLight *pointLights, directionalLight *directionalLights, 
                     Sphere *spheres) {
     // Scene Lights (note: colours not fully implemented)

@@ -26,6 +26,7 @@ struct BMPInfoHeader {
 };
 #pragma pack(pop)
 
+// saves pixel buffer into a .bmp file.
 void saveAsBMP(const std::vector<Colour>& pixels, int width, int height, const std::string& filename) {
     // writes to "renders" directory in folder
     std::filesystem::create_directories("renders");
@@ -66,7 +67,7 @@ void saveAsBMP(const std::vector<Colour>& pixels, int width, int height, const s
     out.close();
 }
 
-
+// reads .bmp file into a pixel buffer.
 std::vector<Colour> loadFromBMP(const std::string& filename, int width, int height) {
     std::ifstream in(filename, std::ios::binary);
     if (!in) {

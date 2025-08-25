@@ -12,4 +12,4 @@ bool refractRay(Vector incidentRay, Vector normal, float n1, float n2, Vector &r
 float fresnelSchlick(float cosTheta, float F0);
 float computeLightIntensity(Vector point, Vector normal, Vector viewVector, float specularExponent);
 
-Colour traceRay(Vector camera, Vector D, float startDist, float endDist, int recursionDepth);
+Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, int recursionDepth);

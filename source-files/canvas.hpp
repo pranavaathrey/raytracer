@@ -7,7 +7,8 @@
 #define WIDTH (1080*1)
 #define HEIGHT (720*1)
 
-class Colour { // Colour class declaration
+// stores 32-bit colour. (8 bit red, green, blue and alpha channels)
+class Colour {
     public:
     uint8_t red, green, blue, alpha;
 
@@ -32,7 +33,8 @@ Colour::Colour(T r, T g, T b, T a) {
     alpha = std::clamp<T>(a, 0, 255);
 } 
 
-class Canvas { // Canvas class declaration
+// stores the pixel buffer (the image itself)
+class Canvas { 
     public:
     std::vector<Colour> pixels;
 

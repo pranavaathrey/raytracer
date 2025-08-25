@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 
+// a 3-dimensional vector defined with x, y and z values.
 class Vector {
     public:
     float x, y, z;
@@ -20,6 +21,7 @@ class Vector {
 
 #define M_PI 3.14159
 
+// helps with the rotation of vectors.
 class Quaternion {
     public:
     float w, x, y, z;

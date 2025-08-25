@@ -33,6 +33,7 @@
 // Canvas class definitions
     Canvas::Canvas(): pixels(WIDTH * HEIGHT) {}
 
+    // places a pixel with the given colour at the given coordinate in the pixel buffer.
     void Canvas::placePixel(const Colour& colour, int x, int y) {
         x = (WIDTH / 2) + x;
         y = (HEIGHT / 2) - y;
@@ -48,6 +49,7 @@
             pixels[y * WIDTH + x] = newColour;
         }
     }
+    // draws the pixel buffer into a window using SFML.
     void Canvas::draw(sf::RenderWindow& window) {
         sf::Image image;
         image.create(WIDTH, HEIGHT);

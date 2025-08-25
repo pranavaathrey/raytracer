@@ -7,6 +7,7 @@
 // importing the HDRI (which is actually sdr but whatever)
 std::vector<Colour> HDRI = loadFromBMP("input/HDRI.bmp", HDRI_WIDTH, HDRI_HEIGHT);
 
+// obtains colour from the HDRI in ray's direction.
 Colour getHDRIpixelFromRay(Vector ray) {
     // calculating uv coordinate
     float u = 0.5 + (atan2(ray.z, ray.x) / (2 * M_PI));
@@ -22,12 +23,13 @@ Colour getHDRIpixelFromRay(Vector ray) {
     return backgroundColour;
 }
 
+// stores the solutions for the IntersectRaySphere quadratic equation.
 struct Solution {
     float t1, t2;
 };
 
+// finds the two points where the ray intersects a sphere (if any) using the quadratic equation
 Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
-    // finds the two points where the ray intersects a sphere (if any) using the quadratic equation
     // O = camera's position, D = light ray emerging from viewport
 
     float r = sphere.radius;
@@ -50,6 +52,7 @@ Solution IntersectRaySphere(Vector O, Vector D, Sphere sphere) {
     return soln;
 }
 
+// reflects ray with respect to given normal
 Vector reflectRay(Vector ray, Vector normal) {
     Vector reflectedRay = (normal * 2) * dot(normal, ray) - ray;
     return reflectedRay;
@@ -74,12 +77,15 @@ float fresnelSchlick(float cosTheta, float F0) {
     return F0 + (1 - F0) * powf(1 - cosTheta, 5);
 }
 
+// stores a packet of informaton related to hit spheres.
 struct infoSet {    
     float closest_t;    
     bool hitAnySphere;
     Sphere closestSphere;
 };
 
+// returns information on the closest sphere and the closer point of intersection, 
+// and also if it hit any sphere in the first place.
 infoSet closestIntersection(Vector cameraPoint, Vector ray, float startDist, float endDist) {
     infoSet set;
     
@@ -106,8 +112,8 @@ infoSet closestIntersection(Vector cameraPoint, Vector ray, float startDist, flo
     return set;
 }
 
+// determines how lit a pixel should be according to the environment around it and the objects material
 float computeLightIntensity(Vector point, Vector normal, Vector viewVector, float specularExponent) {
-    // determines how lit a pixel should be according to the environment around it
     float intensity = ambientLight;
     Vector lightRay;
 
@@ -160,6 +166,7 @@ float computeLightIntensity(Vector point, Vector normal, Vector viewVector, floa
     return intensity;
 }
 
+// traces the given ray and returns what colour would be seen for that point in the viewport.
 Colour traceRay(Vector cameraPoint, Vector ray, float startDist, float endDist, int recursionDepth) {
     infoSet set = closestIntersection(cameraPoint, ray, startDist, endDist);
     if (!set.hitAnySphere) {

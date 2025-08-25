@@ -8,7 +8,8 @@
 
 #define DRAW_DISTANCE 999999
 
-// Camera
+// ----------------Camera----------------
+
 struct Camera {
     Vector position;
     Quaternion orientation;
@@ -17,7 +18,9 @@ struct Camera {
         float yaw, float pitch, float roll);
 };
 
-// Lights
+// ----------------Lights----------------
+
+// emits light uniformly in all directions.
 struct pointLight {
     Colour colour;
     Vector position;
@@ -27,6 +30,7 @@ struct pointLight {
                 float _intensity = 1.0f)
         : colour(_colour), position(_position), intensity(_intensity) {}
 };
+// emits light in one direction, similar to a point light at infinity.
 struct directionalLight {
     Colour colour;
     Vector direction;
@@ -37,7 +41,8 @@ struct directionalLight {
         : colour(_colour), direction(_direction), intensity(_intensity) {}
 };
 
-// Shapes
+// ----------------Shapes----------------
+
 struct Sphere {
     Vector centre;
     float radius;
@@ -52,16 +57,17 @@ struct Sphere {
           specularity(specularExponent), reflectivity(reflectiveness), refractiveIndex(ior) {}
 };
 
-// Functions
+// ----------------Functions----------------
+
 Vector canvasToViewport(int x, int y);
 
-// lights
+// ----------------Lights (definitions)----------------
 #define LIGHT_COUNT 1
 extern float ambientLight;
 extern pointLight pointLights[1];
 extern directionalLight directionalLights[LIGHT_COUNT];
 
-// objects
+// ----------------Objects (definitions)----------------
 extern Sphere spheres[8];
 
 void defineScene(pointLight *pointLights, directionalLight *directionalLights, 

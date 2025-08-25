@@ -60,7 +60,7 @@ int main() {
     // saving render to a bitmap file
     saveAsBMP(canvas.pixels, WIDTH, HEIGHT, "output.bmp"); 
     
-    // displaying the render in a window
+    // displaying the render in a window using SFML
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event))
