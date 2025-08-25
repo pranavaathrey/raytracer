@@ -1,0 +1,10 @@
+^C:\USERS\PRANAV\CODE\C & C++\PROJECTS\RAYTRACER\BUILD\CMAKEFILES\586C40027DC23EEB05FCEA855BB4D8EB\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Pranav/Code/C & C++/projects/raytracer" "-BC:/Users/Pranav/Code/C & C++/projects/raytracer/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/Pranav/Code/C & C++/projects/raytracer/build/Raytracer.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

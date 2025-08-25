@@ -1,0 +1,3 @@
+C:/Users/Pranav/Code/C & C++/projects/raytracer/build/CMakeFiles/Raytracer.dir
+C:/Users/Pranav/Code/C & C++/projects/raytracer/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Pranav/Code/C & C++/projects/raytracer/build/CMakeFiles/ZERO_CHECK.dir

@@ -10,13 +10,15 @@
 #include "postProcess.hpp"
 #include "BMP.hpp"
 
+using namespace std;
+
 int main() {
     // initialize canvas & its window
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Canvas");
     int pixelCount = HEIGHT * WIDTH, lastProgress = -1;    
-    std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Render resolution: " << WIDTH << "x" << HEIGHT << std::endl
-              << "Starting render..." << std::endl;
+    cout << fixed << setprecision(2);
+    cout << "Render resolution: " << WIDTH << "x" << HEIGHT << endl
+              << "Starting render..." << endl;
     Canvas canvas;
 
     // place the camera and define the scene (see sceneDefinition.cpp)
@@ -25,7 +27,7 @@ int main() {
     defineScene(pointLights, directionalLights, spheres);
 
     // start timer
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto startTime = chrono::high_resolution_clock::now();
 
     // render loop
     for (int y = -HEIGHT/2; y < HEIGHT/2; ++y) {
@@ -43,19 +45,19 @@ int main() {
         // (flushing is ridiculously expensive, don't try to "improve" it)
         int currentProgress = (((float)y + (float)HEIGHT/2) / (float)HEIGHT) * 100;
         if(currentProgress != lastProgress) {
-            std::cout << "\r" << currentProgress << "% complete." << std::flush;
+            cout << "\r" << currentProgress << "% complete." << flush;
             lastProgress = currentProgress;
         }
     }
     // end timer and remark in console
-    auto endTime = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    std::cout << "\rRender complete. Time taken: " << duration / 1000.0f << " seconds." << std::endl;
+    auto endTime = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count();
+    cout << "\rRender complete. Time taken: " << duration / 1000.0f << " seconds." << endl;
 
     // doing a post processing pass that removes the bright artifacts seen in the distance
-    std::cout << "\rPost processing...";
+    cout << "\rPost processing...";
     eliminateDistantReflectionAcne(canvas.pixels);
-    std::cout << " complete." << std::endl;    
+    cout << " complete." << endl;    
 
     // saving render to a bitmap file
     saveAsBMP(canvas.pixels, WIDTH, HEIGHT, "output.bmp"); 
