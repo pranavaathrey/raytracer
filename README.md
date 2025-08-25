@@ -2,7 +2,7 @@
 A personal project of mine, to learn some basic graphics programming. 
 
 ## Preview
-![Refraction Test Image](https://raw.githubusercontent.com/pranavaathrey/raytracer/refs/heads/main/renders/refraction_test.png)
+![Refraction Test Image](https://raw.githubusercontent.com/pranavaathrey/raytracer/refs/heads/main/build/Debug/renders/refraction_test.png)
 
 ### Implemented Techniques
 - Ray-traced reflections and shadows.
